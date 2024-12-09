@@ -514,29 +514,29 @@ sudo apt-get install git
 Then go to the `erc_ws/src` directory and open the terminal and run
 
 ```bash
-git clone https://github.com/erciitb/mrs_hudson.git
+git clone https://github.com/Mahi7828/mrshudson.git
 ```
 
 Now before building the package with `colcon build` first we need to change the path of meshes in the urdf and sdf files.
 
-In the `models` and `world` folder open the urdf and sdf files and in mesh filename update the path of the meshes.
+In the `models` and `world` folder open the urdf and sdf files respectively and in mesh filename update the path of the meshes.
 
-(PS: Use a simple find and replace, eg
+(PS: Use a simple find and replace, eg:
 
-find = `home/saurabh42/erc_ws/src/mrs_hudson/meshes`
+find = "file:///home/ubuntu/erc_ws/src/mrs_hudson/meshes/"
 
-replace = `home/shiwani418/erc_ws/src/mrs_hudson/meshes`
+replace with repective addresses of base_link.stl , left_wheel.stl and right_wheel.stl . Make sure to not mess up with these , else you get a error :) 
 
 Do a replace all in both the URDF and SDF file.
 )
 
 Then run `colcon build` in the workspace.
 
-You can visit the [mrs_hudson repo](https://github.com/erciitb/mrs_hudson.git) on the ERC GitHub page.
+You can visit the [mrs_hudson repo](https://github.com/Mahi7828/mrshudson.git) on the ERC GitHub page.
 
 Henceforth, the **mrs_hudson** may be referred to as **bot** simply, unless specified.
 
-Let us see the bot in action in Gazebo !
+Let us see the bot in action in Gazebo!
 
 ## Launching mrs_hudson in Gazebo
 
@@ -554,7 +554,21 @@ To visualize it in **Gazebo** & **Rviz**, run the following command in a separat
 ros2 launch mrs_hudson mrs_hudson_gazebo_rviz.launch.py
 ```
 
-<img src="W1_Images/newlayout.png" width=800 height=600>
+Below the display Section, There is the Add button, click on it and add 'RobotModel' and 'TF' to your display. 
+To make sure all the nodes are working properly, we will be launching the robot_state-publisher and joint_state_publisher manually in different terminals. 
+```bash
+ros2 run robot_state_publisher robot_state_publisher /home/ubuntu/erc_ws/src/mrs_hudson/models/mrs_hudson.urdf
+```
+replace `/home/ubuntu/erc_ws/src/mrs_hudson/models/mrs_hudson.urdf` with address of urdf file in your system. 
+
+```bash
+ros2 run joint_state_publisher joint_state_publisher --ros-args -p robot_description:="file:///home/ubuntu/erc_ws/src/mrs_hudson/models/mrs_hudson.urdf"
+```
+This will start the joint_state_pubisher. 
+
+You will be able to see mrs hudson model on the rviz screen. 
+
+<img src="W1_Images/rviz_with_model.jpg" width=800 height=600>
 
 ## Taking a peek at the nrs_hudson topics
 
@@ -563,16 +577,13 @@ After launching the mrs_hudson in Gazebo, execute `ros2 topic list` in another t
 The expected output is as follows
 
 ```
+/camera
 /clicked_point
-/clock
 /cmd_vel
-/depth_camera
-/depth_camera/points
 /goal_pose
 /initialpose
 /joint_states
 /lidar
-/lidar/points
 /model/mrs_hudson/odometry
 /parameter_events
 /robot_description
@@ -580,7 +591,7 @@ The expected output is as follows
 /tf
 /tf_static
 /world/empty/model/mrs_hudson/joint_state
-saurabh42@saurabh42-HP-Pavilion-Laptop-15-
+
 ```
 
 <img src="W1_Images/Sherlock_moving.gif">
@@ -594,7 +605,7 @@ The Turtlebot3 motion is described by its **linear velocity** and **angular velo
 First launch the bot in gazebo using the launch file then open a new terminal in the erc_ws directory and run the following command
 
 ```
-ros2 run mrs_hudson mrs_hudson_teleop.py
+ros2 run mrs_hudson mrs_hudson_teleop
 ```
 
 we get the ability to control the linear velocity and the angular velocity of the bot using the appropriate keys as displayed on the screen.
@@ -725,39 +736,72 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
+    pkg_project = get_package_share_directory('mrs_hudson')
+    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    sdf_file = os.path.join(pkg_project, 'models', 'mrs_hudson.urdf')
+    with open(sdf_file, 'r') as infp:
+        robot_desc = infp.read()   
+    
+    use_sim_time = LaunchConfiguration('use_sim_time')
+        
+    # Parameters for the nodes
+    params = {'robot_description': robot_desc, 'use_sim_time': use_sim_time}
 
-	pkg_project = get_package_share_directory('mrs_hudson')
-	pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
-	sdf_file = os.path.join(pkg_project, 'models', 'mrs_hudson.urdf')
-	with open(sdf_file, 'r') as infp:
- 		robot_desc = infp.read()
+    # Node for robot_state_publisher
+    node_robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[params]
+    )
 
-	robot_state_publisher = Node(
-  	 package='robot_state_publisher',
-   	 executable='robot_state_publisher',
-   	 name='robot_state_publisher',
-   	 output='both',
-   	 parameters=[
-   	     {'use_sim_time': True},
-   	     {'robot_description': robot_desc},
-   	 ]
-	)
+    # Node for joint_state_publisher
+    node_joint_state_publisher = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        output='screen',
+        parameters=[params]
+    )
 
-	gz_sim = IncludeLaunchDescription(
+    # Gazebo simulation node
+    gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_project, 'launch', 'mrs_hudson_empty_world.launch.py'))
-    	)
-	rviz = Node(
-	package='rviz2',
-	executable='rviz2',
-	arguments=['-d', os.path.join(pkg_project, 'config', 'mrs_hudson.rviz')],
-	)
+            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
+        launch_arguments={'gz_args': os.path.join(pkg_project, 'worlds', 'mrs_hudson.sdf')}.items(),
+    )
+    
+    # Bridge for communication between ROS 2 and Gazebo
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
+                   '/model/mrs_hudson/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+                   '/world/empty/model/mrs_hudson/joint_state@sensor_msgs/msg/JointState@ignition.msgs.Model',
+                   '/lidar@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan',
+                   '/camera@sensor_msgs/msg/Image@gz.msgs.Image',
+                   ],
+        output='screen'
+    )
 
-	return LaunchDescription([
-		robot_state_publisher,
-		rviz,
-		gz_sim
-		])
+    # RViz node for visualization
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d', os.path.join(pkg_project, 'config', 'mrs_hudson.rviz')],
+    )	        
+
+    return LaunchDescription([
+        DeclareLaunchArgument(
+            'use_sim_time',
+            default_value='false',
+            description='Use sim time if true'),
+        node_robot_state_publisher,
+        node_joint_state_publisher,  # Add joint_state_publisher here
+        rviz,	            
+        gz_sim,
+        bridge
+    ])
+
 ```
 
 mrs_hudson_teleop.py
@@ -946,19 +990,7 @@ PS: Hint use lidar data, write the python script to get the data and using it to
 ## Submission details
 
 ### Tentative deadline
-
-19 December 2022, 11:59 PM
-
-### Mode of Submission
-
-The submission link is attached below. Add `96.py` to a Google Drive folder and submit the link to the folder through the form. Also add the screen recording of the bot moving through the obstacle.
-
-[Submission Link](https://forms.gle/xmkVyjG1QBQBTh3k7)
-
-Also, make sure to change the settings as follows-
-
-**Share > Get link > Anyone with the link**
-
+Coming Soon :)
 ### Points to be noted
 
 1. Submitting a simple algorithm that does the basic task of avoidance and exploration is good enough for this task. You will realize over time that a simple implementation might not be perfect in avoiding all kinds of obstacles since the obstacles can be in all shapes and orientations. You can experiment, test in different environments and improve the algorithm over time if the problem of obstacle avoidance and exploration continues to interest you.
