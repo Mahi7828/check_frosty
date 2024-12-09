@@ -15,9 +15,9 @@ Let's begin !
 ## Table of Contents
 
 <ol>
-  <li><a href="#Gazebo">Gaze at Gazebo ...</a></li>
-  <li><a href="#Rviz">Viziting Rviz ...</a></li>
-  <li><a href="#mrs_hudson">mrs_hudson emerges ...</a></li>
+  <li><a href="#Gazebo">Gaze at Gazebo...</a></li>
+  <li><a href="#Rviz">Viziting Rviz...</a></li>
+  <li><a href="#mrs_hudson">mrs_hudson emerges...</a></li>
 </ol>
 
 ## Initial preparation
@@ -25,16 +25,23 @@ Let's begin !
 Create a package `week1_tutorials` in `erc_ws` directory. This will be required for storing the various files that will be created throughout. Recall how to make a package from Episode 0.
 Create `launch`, `models`, `worlds` and `configs` folder in week1_tutorials package (using the mkdir command).
 
-## Gaze at Gazebo ... <a name="Gazebo"></a>
+## Gaze at Gazebo... <a name="Gazebo"></a>
 
 ### What is it ?
 
 Gazebo is a **robotics simulator** that is capable of simulating **dynamical systems** in various **realistic scenarios and environments**.
-This is useful for testing algorithms and designing robots before actually implementing in the real physical world. We will be using Gazebo Fortress.
+This is useful for testing algorithms and designing robots before actually implementing in the real physical world. We will be using Gazebo Fortress. Docker provides pre-installed Gazebo (or Ignition Gazebo) containers, which are convenient for running Gazebo simulations. 
+
+### Checking if Gazebo is present: 
+
+```bash
+ign gazebo --versions
+```
+If Ignition Gazebo is installed, this will display the version number of Gazebo and its components. If you cant find it , then you can install it manually as shown below:
 
 ### Installing Gazebo
 
-First install some necessary tools:
+install some necessary tools:
 
 ```bash
 sudo apt-get update
@@ -97,13 +104,13 @@ The top left toolbar contains controls for transforming.
 
 <img src="W1_Images/key_shortcuts.png" width=700 height=350>
 
-#### Building your own Robot
+### Building your own Robot
 
 ##### SDF
 
 SDFormat (Simulation Description Format), sometimes abbreviated as SDF, is an XML format that describes objects and environments for robot simulators, visualization, and control.
 
-We will start by building a simple world and then build our robot in it. In the week1_tutorials package go to the models directory, Open a new file called cub_world.sdf and copy the following code to it (rememeber how you created turtlesim_mimic_launch.py in episode 0 ?).
+We will start by building a simple world and then build our robot in it. In the week1_tutorials package go to the models directory, Make a new file called cub_world.sdf and copy the following code to it ( rememeber how you created turtlesim_mimic_launch.py in episode 0 ).
 
 ```bash
 <?xml version="1.0" ?>
@@ -173,9 +180,9 @@ Save the file cub_world.sdf, navigate to the models directory and launch the sim
 
 `ign gazebo cub_world.sdf`
 
-#### Building a cuboidal box
+### Building a cuboidal box
 
-Under the </model> tag we will add our robot model as follows:
+Open the cub_world.sdf file. Inside the world tag we will add our cuboid model as follows (Paste the snippets one below the other):
 
 ```bash
 <model name='cuboidal_model' canonical_link='cuboid'>
@@ -237,11 +244,11 @@ Collision
 </model>
 ```
 
-After copying all the parts above into the world file in order, run the world again:
+After copying all the parts above into the world file in order, run the world again by the following command:
 
 `ign gazebo cub_world.sdf`
 
-#### Spawning models using launch file
+### Spawning models using launch file
 
 If you want to spawn the models when launching gazebo world. Make a launch file `cub.launch.py` in the launch folder in the package and add the following code
 
@@ -295,26 +302,26 @@ import os
 from glob import glob
 ```
 
-go to erc_ws directory, run below commands one by one :
+Now, go to erc_ws directory and build the package:
+
+```bash
+colcon build
+source install/setup.bash
+```
+
+If your package doesn't get build, and shows some "package not found error" then you can try running the following commands:
 
 ```bash
 sudo apt install ros-humble-ros-gz
-
 sudo apt install ros-humble-ros-gz-sim
 
 sudo apt upgrade
-
 ros2 pkg list | grep ros_gz_sim   ## shows ros_gz_sim  ros_gz_sim_demos
-
-colcon build
-
-source install/setup.bash
-
 ```
+Once your package is build successfully, we are ready to launch! 
+from the same erc_ws directory run   `ros2 launch week1_tutorials cub.launch.py`
 
-after this , from the same erc_ws directory run `ros2 launch week1_tutorials cub.launch.py`
-
-### Plugins
+### What are Plugins ?
 
 Plugins are a dynamically loaded chunk of code. For example:
 
@@ -345,7 +352,7 @@ The `UserCommands` plugin is responsible for creating models, moving models, del
 
 `SceneBroadcaster` shows our world scene.
 
-## Viziting Rviz2 ... <a name="Rviz"></a>
+## Viziting Rviz2... <a name="Rviz"></a>
 
 ### What is it ?
 
@@ -478,7 +485,7 @@ Install `ros_gz`
  sudo apt install ros-humble-ros-gz
 ```
 
-## mrs_hudson emerges ... <a name="mrs_hudson"></a>
+## mrs_hudson emerges... <a name="mrs_hudson"></a>
 
 Meet mrs_hudson, our Sherlock-themed bot for hands-on ROS, Gazebo, and Rviz exploration. You'll find meticulously crafted URDF and launch files, enabling seamless integration for accomplishing investigations and unfolding mysteries
 
