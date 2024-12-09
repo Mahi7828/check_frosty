@@ -387,7 +387,14 @@ Welcome to Rviz2 !
 
 ### Basic features
 
-1. **Displays** - These are entities that can be "displayed"/ represented/visualized in the world like **point cloud** and **robot state**
+1. **Displays** - The Display Tab in RViz2 allows you to manage and customize different visualizations of ROS 2 data.
+Tree Structure: Lists active displays like LaserScan, PointCloud, TF, etc., with expandable properties.
+Add Displays: Add new visualizations by selecting from a list of types (e.g., Map, Image, Odometry).
+Properties Panel: Customize each display’s settings, such as topics, styles, and reference frames.
+Enable/Disable Displays: Use checkboxes to toggle displays on/off without removing them.
+Fixed Frame: Sets a reference frame (e.g., map or odom) for all visualizations.
+Common Displays: Include Grid, TF, MarkerArray, Path, and RobotModel.
+It’s a flexible tool to visualize, debug, and analyze robotic data efficiently.
 
 <img src="W1_Images/displays.png" width=200 height=400>
 
