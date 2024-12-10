@@ -963,35 +963,5 @@ Additionally, one can try writing code for publishers and subscribers in differe
 
 # Let's play a game, shall we ...
 
-mrs_hudson is trapped in a room and there doesn't seem to be a way out unless the code to escape the room is figured out. She needs to **explore the room autonomously** and find clues which will help them determine the code. As they explore, they should make sure to **avoid colliding with objects** around them.
+Coming soon :) 
 
-<img src="W1_Images/task1.png">
-<img src="W1_Images/task1_lidar.png">
-
-## Steps
-
-1. Create a package `task_1` with `launch`, `config`, `meshes` and `worlds` folders.
-2. Download the `mrs_hudson_arena.world` fand `mrs_hudson_world.launch.py` from the link below and add them to the `worlds` and `launch` folder respectively. Also think where to save the rviz configuration file.
-
-   [Task 1_files](https://github.com/erciitb/frosty-winter-2023/tree/main/Task%201_files)
-
-3. Create a node file `96.py` in the `task1` folder of `task_1` package, which will be responsible for **obstacle avoidance and exploration** of the room.
-4. Then setup the package by adding the required in setup.py and package.xml. :) hope you guys understood and not just copied pasted till now. You need to add the meshes in task1 package, just copy formo mrs_hudson package. Also you need to change the directory of the meshes according to where you make the package in sdf file, as we did for setting up mrs_hudson package.
-5. Launch he bot and your script and let the bot find its way.
-6. The bot will begin exploring the room while avoiding obstacles.
-
-Have fun!
-
-PS: Hint use lidar data, write the python script to get the data and using it to find the path, it need not to be the most efficient for now.
-
-<img src="W1_Images/Code.gif">
-
-## Submission details
-
-### Tentative deadline
-Coming Soon :)
-### Points to be noted
-
-1. Submitting a simple algorithm that does the basic task of avoidance and exploration is good enough for this task. You will realize over time that a simple implementation might not be perfect in avoiding all kinds of obstacles since the obstacles can be in all shapes and orientations. You can experiment, test in different environments and improve the algorithm over time if the problem of obstacle avoidance and exploration continues to interest you.
-
-2. If you are in a team, it is advised that you work with your team member for greater efficiency.
