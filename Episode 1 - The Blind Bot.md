@@ -411,8 +411,8 @@ Using the **Add** button, we can add additional displays.
 
 2. **Camera types** - These are ways of viewing the world from different angles and projections.
 
-<img src="W1_Images/cameraa
-ameratypes.png" width=300 height=90>
+<img src="W1_Imagess/cameraa
+ameratypes.png" width=200 height=90>
 
 3. **Configurations** - These are combinations of displays, camera types, etc that define the overall layout of what and how the visualization is taking place in the rviz window.
 
