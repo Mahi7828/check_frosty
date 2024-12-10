@@ -517,17 +517,19 @@ git clone https://github.com/Mahi7828/mrshudson.git
 ```
 
 Now before building the package with `colcon build` first we need to change the path of meshes in the urdf and sdf files.
+In the models and world folder, you will see the urdf and sdf files respectively. In both files, update the path of the meshes according to their locations in your system.
 
-In the `models` and `world` folder open the urdf and sdf files respectively and in mesh filename update the path of the meshes.
+If you are using docker as per our instructions, You all will have a same directory address given by "file:///home/ubuntu/erc_ws/src/mrs_hudson/meshes/". So You don't need to change any path. To be safer, crosscheck the address of one of your stl files.
 
-(PS: Use a simple find and replace, eg:
+For those using any other way of running linux or Any other folders as their workspace:
+
+Use a simple find and replace, eg:
 
 find = "file:///home/ubuntu/erc_ws/src/mrs_hudson/meshes/"
 
-replace with repective addresses of base_link.stl , left_wheel.stl and right_wheel.stl . Make sure to not mess up with these , else you get a error :) 
+replace with repective addresses of base_link.stl , left_wheel.stl and right_wheel.stl in your system (Easy way to know: just go to the mrs_hudson folder you cloned, then meshes folder, copy the address of stl files). Make sure to not mess up with these, also do check if it was previously right_wheel.stl address then the new address which you are updating should be of right_wheel.stl and not any other stl file. else you get a error :)
 
-Do a replace all in both the URDF and SDF file.
-)
+Do these replacements in both urdf and sdf files, crosscheck all when you are done.
 
 Then run `colcon build` in the workspace.
 
